@@ -81,23 +81,17 @@ app.put("/products/:id", function (req, res) {
 });
 
 
-const shopNameToIdMap = {
-    "st1": 1,
-    "st2": 2,
-    "st3": 3,
-    "st4": 4
-};
-const productNameToIdMap = {
-    "pr1": 1,
-    "pr2": 2,
-    "pr3": 3,
-    "pr4": 4,
-    "pr5": 5,
-    "pr6": 6,
-    "pr7": 7,
-    "pr8": 8,
 
-};
+const shopNameToIdMap = shops.reduce((map, shop) => {
+    map[`st${shop.shopId}`] = shop.shopId;
+    return map;
+}, {});
+
+const productNameToIdMap = products.reduce((map, product) => {
+    map[product.productName] = `pr${product.productId}`;
+    return map;
+}, {});
+
 
 app.get('/purchase', (req, res) => {
     const { shop, product, sort } = req.query;
