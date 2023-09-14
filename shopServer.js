@@ -81,20 +81,43 @@ app.put("/products/:id", function (req, res) {
 });
 
 
+const shopNameToIdMap = {
+    "st1": 1,
+    "st2": 2,
+    "st3": 3,
+    "st4": 4
+};
+const productNameToIdMap = {
+    "pr1": 1,
+    "pr2": 2,
+    "pr3": 3,
+    "pr4": 4,
+    "pr5": 5,
+    "pr6": 6,
+    "pr7": 7,
+    "pr8": 8,
+
+};
+
 app.get('/purchase', (req, res) => {
     const { shop, product, sort } = req.query;
     let filteredPurchases = [...purchases];
 
-
     if (shop) {
-        const shopIds = shop.split(',').map(Number);
-        filteredPurchases = filteredPurchases.filter(purchase => shopIds.includes(purchase.shopId));
-    }
-    if (product) {
-        const productIds = product.split(',').map(Number);
-        filteredPurchases = filteredPurchases.filter(purchase => productIds.includes(purchase.productid));
+        const shopCriteria = shop.split(',');
+        filteredPurchases = filteredPurchases.filter(purchase => {
+            const shopId = shopNameToIdMap[purchase.shopId] || purchase.shopId;
+            return shopCriteria.includes(`st${shopId}`);
+        });
     }
 
+    if (product) {
+        const productCriteria = product.split(',');
+        filteredPurchases = filteredPurchases.filter(purchase => {
+            const productId = productNameToIdMap[`pr${purchase.productid}`] || purchase.productid;
+            return productCriteria.includes(`pr${productId}`);
+        });
+    }
 
     if (sort) {
         const sortParams = sort.split(',');
@@ -115,6 +138,8 @@ app.get('/purchase', (req, res) => {
 
     res.json(filteredPurchases);
 });
+
+
 app.get("/purchase/:id", function (req, res) {
     let id = +req.params.id;
     const prod = purchases.find((st) => st.purchaseId === id);
